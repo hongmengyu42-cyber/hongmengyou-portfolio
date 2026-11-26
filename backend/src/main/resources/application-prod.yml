@@ -1,0 +1,14 @@
+server:
+  servlet:
+    session:
+      cookie:
+        # true behind HTTPS (the default). Set SESSION_COOKIE_SECURE=false only to try the stack on plain http://localhost
+        secure: ${SESSION_COOKIE_SECURE:true}
+
+spring:
+  flyway:
+    locations: classpath:db/migration         # no placeholder seed data in production
+
+logging:
+  level:
+    root: INFO

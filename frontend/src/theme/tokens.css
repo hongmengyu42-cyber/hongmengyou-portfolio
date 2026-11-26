@@ -1,0 +1,78 @@
+/*
+ * Design tokens: the single source of truth for colour.
+ * Tailwind utilities (bg-canvas, text-ink, ...) read these variables, so switching the .dark class
+ * on <html> restyles everything. src/theme/contrast.test.ts parses this file and fails the build
+ * if any text/background pair drops below its WCAG AA ratio.
+ *
+ * Brand values from the brief: navy #0B1B3A, accent #2F6FED, light background #FAFBFD, text #1F2933.
+ * Derived values (marked "derived") exist only because the raw accent is 4.39:1 on the light background
+ * and 3.75:1 on navy, which is below the 4.5:1 AA minimum for small text.
+ */
+
+:root {
+  /* Brand */
+  --c-navy: #0B1B3A;
+  --c-accent: #2F6FED;
+
+  /* Surfaces */
+  --c-canvas: #FAFBFD;
+  --c-surface: #FFFFFF;
+  --c-surface-2: #F2F5FA;
+  --c-line: #E1E6EE;
+  --c-input-border: #7B8794;
+
+  /* Text */
+  --c-ink: #1F2933;
+  --c-muted: #52606D;
+  --c-accent-text: #2457CC;   /* derived: accent for small text on light */
+  --c-on-accent: #FFFFFF;
+
+  /* Buttons */
+  --c-btn-bg: #0B1B3A;
+  --c-btn-bg-hover: #16295A;
+  --c-btn-fg: #FFFFFF;
+
+  /* Focus ring */
+  --c-focus: #2F6FED;
+
+  /* Always-dark code card */
+  --c-code-bg: #07122A;
+  --c-code-fg: #D7E0F0;
+  --c-code-muted: #8EA0BD;
+  --c-code-key: #8AB0FF;
+  --c-code-str: #B7C7E6;
+
+  /* Shape and depth */
+  --radius-card: 1rem;
+  --radius-control: 0.625rem;
+  --shadow-soft: 0 1px 2px rgb(11 27 58 / 0.05), 0 8px 24px -12px rgb(11 27 58 / 0.14);
+  --shadow-lift: 0 2px 4px rgb(11 27 58 / 0.06), 0 18px 40px -14px rgb(11 27 58 / 0.24);
+
+  /* Hero atmosphere */
+  --g-hero: radial-gradient(60rem 28rem at 85% -10%, rgb(47 111 237 / 0.10), transparent 60%),
+            linear-gradient(180deg, #FAFBFD 0%, #F2F5FA 100%);
+}
+
+.dark {
+  --c-canvas: #0B1B3A;
+  --c-surface: #11264D;
+  --c-surface-2: #0E2143;
+  --c-line: #223A66;
+  --c-input-border: #7A8DB0;
+
+  --c-ink: #E8EDF7;
+  --c-muted: #A9B8D0;
+  --c-accent-text: #8AB0FF;   /* derived: accent for small text on navy */
+
+  --c-btn-bg: #2F6FED;
+  --c-btn-bg-hover: #2760D6;
+  --c-btn-fg: #FFFFFF;
+
+  --c-focus: #8AB0FF;
+
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.25), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 40px -14px rgb(0 0 0 / 0.6);
+
+  --g-hero: radial-gradient(60rem 28rem at 85% -10%, rgb(47 111 237 / 0.18), transparent 60%),
+            linear-gradient(180deg, #0B1B3A 0%, #07122A 100%);
+}

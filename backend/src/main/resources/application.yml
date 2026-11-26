@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: portfolio-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/portfolio}
+    username: ${DB_USERNAME:portfolio}
+    password: ${DB_PASSWORD}          # required: no default on purpose
+  jpa:
+    open-in-view: false               # no lazy loading while rendering JSON
+    hibernate:
+      ddl-auto: validate              # Flyway owns the schema; Hibernate only verifies it
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50  # collections load in batches, which avoids N+1 on lists
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  cache:
+    type: caffeine
+    cache-names: projects,project-detail,skills,experience,education,certifications,profile,seo-head
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
+
+server:
+  port: 8080
+  shutdown: graceful
+  forward-headers-strategy: native    # trust X-Forwarded-* from the reverse proxy (internal ranges only)
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        same-site: strict
+        # `secure` is enabled per profile (prod); browsers accept it on http://localhost in dev
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:                            # secure by default; the dev profile turns docs on
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  site:
+    base-url: ${SITE_BASE_URL:http://localhost:5173}
+  security:
+    ip-hash-secret: ${IP_HASH_SECRET}   # required in prod; dev profile supplies a throwaway value
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}   # empty = same-origin only
+    max-failed-logins: 5
+    lockout-minutes: 15
+    login-attempts-per-minute: 10
+    contact-per-hour: 5
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+  storage:
+    local-root: ${STORAGE_ROOT:./data/uploads}
+  linkcheck:
+    connect-timeout-ms: 3000
+    read-timeout-ms: 5000
+    max-redirects: 5

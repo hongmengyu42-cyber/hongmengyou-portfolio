@@ -1,0 +1,100 @@
+# Portfolio stack: PostgreSQL + Spring Boot API + nginx (serves the React app and proxies /api).
+#   docker compose up -d --build                    -> http://localhost:8080
+#   docker compose --profile https up -d --build    -> adds Caddy for automatic HTTPS on a server with a domain
+name: portfolio
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-portfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-portfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env (run scripts/init-env.sh)}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal]
+    # No "ports": the database is reachable only by the backend, never from the host or the internet.
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-portfolio}
+      DB_USERNAME: ${POSTGRES_USER:-portfolio}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      IP_HASH_SECRET: ${IP_HASH_SECRET:?Set IP_HASH_SECRET in .env (run scripts/init-env.sh)}
+      SITE_BASE_URL: ${SITE_BASE_URL:?Set SITE_BASE_URL in .env}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-true}
+      STORAGE_ROOT: /data/uploads
+    volumes:
+      - uploads:/data/uploads
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal]
+    # No "ports": only nginx can reach the API.
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      # Bound to this machine only by default. On a server, Caddy (profile "https") is the public entry point.
+      # Set HTTP_BIND=0.0.0.0 only if your platform needs the port exposed directly.
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/theme-init.js"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal]
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["https"]
+    restart: unless-stopped
+    depends_on:
+      frontend:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Set DOMAIN in .env to use the https profile}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data        # certificates live here: keep this volume
+      - caddy_config:/config
+    security_opt: ["no-new-privileges:true"]
+    networks: [internal]
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:
+  caddy_config:
+
+networks:
+  internal:

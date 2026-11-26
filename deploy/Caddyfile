@@ -1,0 +1,5 @@
+# Automatic HTTPS (Let's Encrypt) for your domain, then hand everything to nginx.
+# Caddy sets X-Forwarded-For / X-Forwarded-Proto itself and ignores any the visitor sent.
+{$DOMAIN} {
+	reverse_proxy frontend:8080
+}

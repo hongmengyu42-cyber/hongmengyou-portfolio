@@ -1,0 +1,105 @@
+@import 'tailwindcss';
+@import '../theme/tokens.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tailwind theme values. `inline` makes utilities reference the CSS variables directly,
+   which is what lets the .dark class swap the palette at runtime. */
+@theme inline {
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-line: var(--c-line);
+  --color-field: var(--c-input-border);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-brand: var(--c-navy);
+  --color-accent: var(--c-accent);
+  --color-accent-text: var(--c-accent-text);
+  --color-on-accent: var(--c-on-accent);
+  --color-btn: var(--c-btn-bg);
+  --color-btn-hover: var(--c-btn-bg-hover);
+  --color-btn-fg: var(--c-btn-fg);
+  --color-focus: var(--c-focus);
+  --color-code-bg: var(--c-code-bg);
+  --color-code-fg: var(--c-code-fg);
+  --color-code-muted: var(--c-code-muted);
+  --color-code-key: var(--c-code-key);
+  --color-code-str: var(--c-code-str);
+
+  --radius-card: var(--radius-card);
+  --radius-control: var(--radius-control);
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 5rem; /* anchored sections stop below the sticky header */
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background-color: var(--c-canvas);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  :where(h1, h2, h3) {
+    color: var(--c-ink);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  /* One visible, high-contrast focus style everywhere. */
+  :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--c-focus);
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+  ::selection {
+    background: var(--c-accent);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .bg-hero {
+    background: var(--g-hero);
+  }
+  .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+    transition: box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+  }
+  .card-hover:hover {
+    box-shadow: var(--shadow-lift);
+    transform: translateY(-2px);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    color: var(--c-accent-text);
+  }
+}
+
+/* Respect the user's motion preference for CSS transitions too (JS animations check it separately). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card-hover:hover {
+    transform: none;
+  }
+}

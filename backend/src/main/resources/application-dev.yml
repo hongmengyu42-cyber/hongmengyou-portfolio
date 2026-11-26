@@ -1,0 +1,23 @@
+# Local development only. Never use this profile on a public host.
+spring:
+  datasource:
+    password: ${DB_PASSWORD:portfolio}          # throwaway local docker password
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed   # includes TODO_REPLACE placeholder projects
+  jpa:
+    show-sql: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+app:
+  security:
+    ip-hash-secret: ${IP_HASH_SECRET:dev-only-insecure-secret-do-not-use-in-prod}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+logging:
+  level:
+    com.example.portfolio: DEBUG

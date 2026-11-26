@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Applies the saved theme before first paint (an external file, so a strict CSP can stay in force). -->
+    <script src="/theme-init.js"></script>
+    <!--
+      The block between the SEO_HEAD markers is the static fallback (and what you see in `npm run dev`).
+      In the Docker image, scripts/inject-seo-ssi.mjs replaces it with an nginx SSI include, so nginx asks the backend
+      (GET /api/v1/seo/head) for the real per-page title, description, canonical and Open Graph tags. If the backend is
+      unreachable, nginx falls back to exactly this block.
+    -->
+    <!--SEO_HEAD_START-->
+    <title>Hong Mengyou | Full-Stack Developer</title>
+    <meta name="description" content="Portfolio of Hong Mengyou: full-stack and Java backend developer." />
+    <!--SEO_HEAD_END-->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    password: test
+  flyway:
+    locations: classpath:db/migration,classpath:db/seed
+app:
+  security:
+    ip-hash-secret: test-only-secret
+    max-failed-logins: 3
+    login-attempts-per-minute: 1000
+  admin:
+    email: admin@example.com
+    password: correct-horse-battery-staple
+  storage:
+    local-root: target/test-uploads
