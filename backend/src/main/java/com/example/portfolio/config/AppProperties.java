@@ -13,7 +13,9 @@ public record AppProperties(Site site, Security security, Admin admin, Storage s
 
     public record Admin(String email, String password) {}
 
-    public record Storage(String localRoot) {}
+    public record Storage(String localRoot, R2 r2) {
+        public record R2(String endpoint, String bucket, String accessKey, String secretKey) {}
+    }
 
     public record LinkCheck(int connectTimeoutMs, int readTimeoutMs, int maxRedirects) {}
 }
