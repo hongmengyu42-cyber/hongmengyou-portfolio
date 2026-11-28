@@ -25,11 +25,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Page<Project> findByPublishedTrueAndCategory(ProjectCategory category, Pageable pageable);
 
-    // Single-row lookups can safely fetch the associations in one query.
-    @EntityGraph(attributePaths = {"technologies", "images"})
+    // Fetch-join only one collection (`technologies`) here; joining `images` (a List/Bag) in the
+    // same query creates a Cartesian product that duplicates ProjectImage entries in Hibernate.
+    @EntityGraph(attributePaths = {"technologies"})
     Optional<Project> findBySlugAndPublishedTrue(String slug);
 
-    @EntityGraph(attributePaths = {"technologies", "images"})
+    @EntityGraph(attributePaths = {"technologies"})
     Optional<Project> findWithAssociationsById(Long id);
 
     List<Project> findByPublishedTrueOrderByDisplayOrderAscIdAsc();
